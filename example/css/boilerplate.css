@@ -1,0 +1,220 @@
+@charset 'UTF-8';
+
+
+/** CLEAR FIX **/
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+ 
+.clearfix {
+    display: inline-block;
+}
+ 
+html[xmlns] .clearfix {
+    display: block;
+}
+ 
+* html .clearfix {
+    height: 1%;
+}
+
+
+/** GENERAL TAGS **/
+
+* {    
+    margin: 0;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -o-box-sizing: border-box;
+}
+html {
+    overflow-y: scroll; 
+    overflow-x: hidden;
+}   
+body {
+    background:#FFF;
+    visibility: hidden; /* will be switched as soon as page is ready */
+}
+body, input, textarea {
+    font-family: 'Helvetica', sans-serif;
+    font-weight:normal;
+    font-size: 12pt;
+    line-height: 1.5;   
+    /* background: #DDD; */
+}
+h1, h2, h3, h4, h5, h6 {
+    font-size: 18pt;
+    line-height: 1;
+    padding: 0.5em;
+    margin:0;
+    font-weight: bold;
+}
+h2 {
+    font-size: 16pt;
+}
+h3 {
+    font-size: 14pt;
+}
+h4, h5, h6 {
+    font-size: 13pt;
+}
+nav {
+    background:transparent;
+}
+nav ul {
+    display:table;
+    table-layout:fixed;
+    width: 100%;
+    background:transparent;
+}
+nav ul li {
+    display:table-cell;
+    vertical-align: middle;
+    text-shadow: 0px 0px 8px #FFF;
+}
+nav ul li a{
+    text-align:center;
+    display:block;
+    white-space:nowrap;
+    color: #000;
+    font-size: 36pt;
+    font-weight: bold;
+    line-height: 1.2;
+    text-align: left;
+}
+a {
+    color: firebrick;
+    text-decoration:none;
+}
+a:hover {
+    text-decoration:underline;
+}
+p {
+    margin: 0 0 1em;
+    padding: 0.5em;
+}
+
+
+
+/** CSS STICKY FOOTER **/
+
+html, body {    
+    min-height: 100%;
+    height: 100%;
+}
+/*Opera Fix*/
+body:before {
+    content:"";
+    height:100%;
+    float:left;
+    width:0;
+    margin-top:-32767px;/
+}
+#wrapper {
+    min-height: 100%;
+    position: relative; 
+}
+#wrapper-content {
+    overflow: visible;
+    padding-bottom: 200px; /* value of footer height */
+}
+#footer {
+    position: relative; 
+    height: 200px;
+    margin-top: -200px; /* negative value of footer height */
+    clear:both;
+}
+
+
+/** GENERAL WRAPPERS **/
+
+#header nav,
+#wrapper-content,
+#footer-content {
+    clear:both;
+    width: 1000px;
+    margin: 0 auto;
+    position: relative;
+}
+#header {
+    padding: 1.5em 1em 1em;
+    height: 114px;
+    background: #DDD;
+}
+#main {
+    width: 700px;
+    position: relative;
+    float:left;
+}
+#left {
+    width: 300px;
+    background:#999;
+    color: #FFF;
+    float:right;
+    margin: 50px 0 0;
+    position: relative;
+}
+#main, #left {
+    margin-bottom: 2em;
+}
+#main .inside, #left .inside {
+    padding: 1em;
+}
+#footer {
+    background: #CCC;
+}
+#footer-content {
+    text-align:center;
+    padding:2em;
+    height:100%;
+    background: #DDD;
+}
+#loading-indicator {    
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    background:rgba(0,0,0,0.8);
+    width:100%;
+    height:100%;
+    z-index: 1;
+    display:none;
+}
+
+
+/** GENERAL CLASSES **/
+
+.invisible,
+.loading,
+.entering,
+.transit {
+    display: none;
+}
+.dynamic-section-block {
+    position: absolute;
+    top:0;
+    left:0;
+}
+.dynamic-section-block.active {
+    position: static;
+    z-index:1;
+}
+
+
+/** MODULES **/
+.fancybox-gallery {
+    background: yellow;
+    float: left;
+    width:100%;
+}
+.fancybox-gallery li {
+    float: left;
+    padding:1em;
+}
