@@ -41,8 +41,9 @@ html {
 }   
 body {
     background:#FFF;
-    visibility: hidden; /* will be switched as soon as page is ready */
 }
+
+
 body, input, textarea {
     font-family: 'Helvetica', sans-serif;
     font-weight:normal;
@@ -191,30 +192,12 @@ body:before {
 
 /** GENERAL CLASSES **/
 
-.invisible,
-.loading,
-.entering,
-.transit {
-    display: none;
-}
-.dynamic-section-block {
-    position: absolute;
-    top:0;
-    left:0;
-}
-.dynamic-section-block.active {
-    position: static;
-    z-index:1;
-}
-
 
 /** MODULES **/
 .fancybox-gallery {
     background: yellow;
-    float: left;
     width:100%;
 }
 .fancybox-gallery li {
-    float: left;
     padding:1em;
 }

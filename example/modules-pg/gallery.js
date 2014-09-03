@@ -1,16 +1,21 @@
 define([
     'jquery',
-    'backbone',
-    'fancybox',
+    'bower_components/fancybox/source/jquery.fancybox.pack',
     'css!bower_components/fancybox/source/jquery.fancybox.css'
 ],
 
-function($, Backbone) {
+function($) {
     
-    return Backbone.View.extend({
+    return {
         
         events: {
             'click a': 'open'
+        },
+
+        cycle: {
+            perform: function(){
+                console.log("PERFORM GALLERY!")
+            }
         },
 
         initialize: function(){
@@ -20,7 +25,7 @@ function($, Backbone) {
         
         open: function(e){
             var self = this;
-            
+            alert("OPEN")
             if(e.preventDefault){
                 e.preventDefault();
             }else{
@@ -48,5 +53,5 @@ function($, Backbone) {
             
         }
         
-    });
+    }
 });

@@ -8,14 +8,15 @@ require ['jquery','cs!sectionwrapper'], ( $, SectionWrapper ) ->
 		new SectionWrapper
 			
 			el: 'body'
-			root: '/'+location.pathname.split('/').slice(1,3).join('/')+'/'
+			root: '/dynamizr2/example/'
 
 			modules:
-				'#header': 'example/modules-fe/header-nav'
+				'#header': 'cs!example/modules-fe/header-nav'
+				# '#main': 'example/modules-fe/header-nav'
 				'#footer': 'example/modules-fe/footer-nav'
 
 			sections:
-				'#main': 'example/transitions/main'
+				'#main': 'cs!example/transitions/main'
 				'#header nav':
 					transition: 'cut'
 

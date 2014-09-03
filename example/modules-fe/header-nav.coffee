@@ -1,17 +1,20 @@
 define [], ->
 	
-	controls:
+	cycle:
 
 		load: (next) ->
 			setTimeout ->
-				alert("DONE!!")
-				next();
-			,2000
+				console.log("header-nav loaded with timeout")
+				next()
+			,200
+
+		perform: -> console.log "PERFORM HEADER!"
+		update: -> console.log "UPDATE HEADER!"
 
 	events:
 
 		'click li':'sayHi'
-	
+
 	getRandomColor: ->
 
 	    letters = '0123456789ABCDEF'.split('')
