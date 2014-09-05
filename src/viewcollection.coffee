@@ -1,4 +1,8 @@
-define ['jquery','underscore'], ($,_) ->
+define [
+	'jquery'
+	'underscore'
+], 
+($,_) ->
 	
 	class ViewCollection
 
@@ -75,8 +79,8 @@ define ['jquery','underscore'], ($,_) ->
 
 		$: (selector) ->
 
-            $return = $ [];
-            views = _.filter @views, (view) -> view.$el.is selector
-            if views.length > 0 then @each ((view) -> $return = $return.add view.$el ), views
-            $return
+			$return = $ [];
+			views = _.filter @views, (view) -> view.$el.is selector
+			if views.length > 0 then @each ((view) -> $return = $return.add view.$el ), views
+			$return
 

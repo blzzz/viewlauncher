@@ -1,10 +1,19 @@
-define ['jquery','underscore','backbone','cs!moduleloader','cs!pagecollection','cs!section', 'cs!viewcollection'], ($,_,Backbone,ModuleLoader,PageCollection,Section, ViewCollection) ->
+define [
+	'jquery'
+	'underscore'
+	'backbone'
+	'cs!moduleloader'
+	'cs!pagecollection'
+	'cs!section'
+	'cs!viewcollection'
+], 
+($,_,Backbone,ModuleLoader,PageCollection,Section, ViewCollection) ->
 	
 	Backbone.View.extend
 		
 		el: 'body'
 
-		loading: no
+		loading: null
 
 		pages: null
 
@@ -32,9 +41,9 @@ define ['jquery','underscore','backbone','cs!moduleloader','cs!pagecollection','
 			
 			@config = _.extend @config, config
 			
-		run: ->
+		run: (jsonPagesSrc) ->
 
-			# ROUTER
+			# install backbone router and start history
 			wrapper = @
 			Router = Backbone.Router.extend				
 				routes: '':'request', ':href':'request'
@@ -43,15 +52,14 @@ define ['jquery','underscore','backbone','cs!moduleloader','cs!pagecollection','
 			Backbone.history.start pushState: @config.pushState, root: @config.root, silent: on
 			@trigger 'wrapperHistoryStarted', @router
 
-			# SECTIONS
+			# load wrappers sections and modules and finally request loaded page
+			@loading = new $.Deferred()
 			initialHtml = @$el.html()
 			@launchSections @config.sections, ->
 				
-				# WRAPPER MODULES
 				@trigger 'sectionsLaunched', @sections
 				@launchWrapperModules ->
 
-					# PAGES & SECTION MODULES
 					@trigger 'wrapperAssetsLoaded', @moduleLoader
 					href = Backbone.history.fragment
 					@pages = new PageCollection @config.pages, 
@@ -59,8 +67,18 @@ define ['jquery','underscore','backbone','cs!moduleloader','cs!pagecollection','
 						sections: @sections
 						initialHref: href
 						initialHtml: initialHtml
-					@requestPage href, true		
+					@requestPage href, true
 				@
+			@
+
+			# preload page contents by parsing a json file
+			if jsonPagesSrc
+				loadingPages = new $.Deferred()
+				$.when @loading
+				.then -> wrapper.loadJsonPages jsonPagesSrc, loadingPages.resolve
+				loadingPages
+			else
+				@loading
 
 		launchWrapperModules: (next) ->
 			
@@ -93,19 +111,20 @@ define ['jquery','underscore','backbone','cs!moduleloader','cs!pagecollection','
 			toLoad = _.compact _.pluck sections, 'source'
 			if toLoad.length is 0 then sectionsLoaded.call context else require toLoad, sectionsLoaded
 			
-		launchSectionModules: (next) ->
-			
-			@sections.waitFor 'launchModules', ->
-				next.call @
-				@loading = no
-			,@
-			
-		requestPage: (href = '', byCall = false, byRoute = false, byClick = not byCall and not byRoute) ->
+		loadJsonPages: (src, next, context = @) ->
 
-			if @loading then return			
+			wrapper = @
+			$.ajax url: src
+			.done (json) -> 
+				pages = wrapper.pages.add json
+				wrapper.trigger 'pagesFetched', pages
+				next.call context if next
+
+		requestPage: (href = '', byCall = false, byRoute = false, byClick = !byCall && !byRoute) ->
+
+			if not byCall and @loading.state() is 'pending' then return			
 			if byClick then	Backbone.history.navigate href, silent: yes
 			
-			@loading = yes
 			@trigger 'pageRequested', {href, byCall, byClick, byRoute}
 			@pages.byHref href, (page) -> 
 				
@@ -123,9 +142,9 @@ define ['jquery','underscore','backbone','cs!moduleloader','cs!pagecollection','
 						@trigger 'transitionsDone', @sections
 						@moduleLoader[if byCall then 'performInstances' else 'updateInstances'] page, @sections
 						@sections.each (section) -> section.moduleLoader.performInstances()
-						@loading = no
-
-					,@, @config.maxTransitionTime
+						@loading.resolve @
+					,@ 
+					,@config.maxTransitionTime
 				,@
 			,@
 			

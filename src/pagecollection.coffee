@@ -1,4 +1,9 @@
-define ['backbone','underscore','jquery'], (Backbone,_,$) ->
+define [
+	'backbone'
+	'underscore'
+	'jquery'
+], 
+(Backbone,_,$) ->
 
 	Backbone.Collection.extend
 		
@@ -9,26 +14,26 @@ define ['backbone','underscore','jquery'], (Backbone,_,$) ->
 			Backbone.Model.extend				
 
 				defaults:
-					href: 'untitled'
+					href: 'untitled page'
 					html: ''
 					content: []
 					meta:
-						title: 'untitled'
+						title: 'untitled page'
 
 				deffered: null
 
 				fetch: (next, context) ->
 
-					# if @deffered.state()
-					# 	@deffered.abort()
-					# 	@unbind 'fetched'
 					page = @
+					url = page.collection.config.root + page.get 'href'
 					@deffered = $.ajax
 						type: 'GET'
-						url: page.collection.config.root + page.get 'href'
+						url: url
 					.done (html) ->
 						page.parseHtml html
-						next.call context, page					
+						next.call context, page	
+					.fail (error)->
+						throw new Error "Couldn't load page #{url} (#{error.statusText})"				
 
 				parseHtml: (html) ->
 

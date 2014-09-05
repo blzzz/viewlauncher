@@ -4,7 +4,8 @@ define [
 	'cs!moduleloader'
 	'cs!viewcollection'
 	'imagesLoaded'
-], (Backbone,$,ModuleLoader,ViewCollection) ->
+],
+(Backbone,$,ModuleLoader,ViewCollection) ->
 
 	Backbone.View.extend
 
