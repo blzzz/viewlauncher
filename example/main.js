@@ -26,7 +26,7 @@
         if (params2) {
           return console.log(params2);
         }
-      }).run();
+      }).run('pages.json');
       return $('body > *').css('visibility', 'visible');
     });
   });

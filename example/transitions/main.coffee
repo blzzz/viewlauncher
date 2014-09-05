@@ -2,10 +2,10 @@ define [],->
     
     transitionStates:
         
-        final: background:'red', position:'static'
+        final: position:'static' # , background:'red'
     
     transition: (curr, next, done, duration=900) ->
-        # console.log next.size().height
+        
         curr.to 'before', duration/3 if curr        
         @$el.animate height:next.size().height, duration/3
         .promise().done -> 

@@ -3,7 +3,6 @@
     return {
       transitionStates: {
         final: {
-          background: 'red',
           position: 'static'
         }
       },
