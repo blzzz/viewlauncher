@@ -5,7 +5,7 @@ require.config({
     backbone: '../bower_components/backbone/backbone',
     jquery: '../bower_components/jquery/dist/jquery',
     underscore: '../bower_components/underscore/underscore',
-    imagesLoaded: '../bower_components/imagesloaded/imagesloaded.pkgd',
+    imagesLoaded: '../bower_components/imagesloaded/imagesloaded.pkgd'
   },
   shim: {
     backbone: {

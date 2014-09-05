@@ -31,7 +31,7 @@ module.exports = ->
           include: ['cs!sectionwrapper','css'],
           
           # exclude: ['coffee-script'],
-          # stubModules: ['cs'],
+          stubModules: ['cs','coffee-script'],
 
           out: '<%= buildDir %>/viewlauncher.js',
           optimize: 'none' #'uglify2',
@@ -46,13 +46,18 @@ module.exports = ->
       dist:
         src: 'build/viewlauncher.js'
         dest: 'dist/viewlauncher.js'
+    uglify:
+      dist:
+        files:
+          'dist/viewlauncher.min.js': ['dist/viewlauncher.js']
 
   # Load external Grunt task plugins.
   @loadNpmTasks "grunt-contrib-coffee"
   @loadNpmTasks "grunt-contrib-watch"
   @loadNpmTasks "grunt-contrib-requirejs"
   @loadNpmTasks "grunt-contrib-copy"
+  @loadNpmTasks "grunt-contrib-uglify"
 
   # Default task.
-  @registerTask "default", ["requirejs:compile","copy:dist"]
+  @registerTask "default", ["requirejs:compile","copy:dist","uglify:dist"]
   @registerTask "assets", ["coffee:assets"]
