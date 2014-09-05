@@ -1,12 +1,12 @@
 {
-  "name": "dynamisr2",
+  "name": "viewlauncher",
   "version": "1.0.0",
-  "description": "",
+  "description": "viewlauncher parses a websites markup for sections and modules and loads the corresponding Backbone View modules",
   "main": "example/index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Balz Rittmeyer <balz.rittmeyer@gmail.com",
   "license": "ISC",
   "devDependencies": {
     "grunt": "^0.4.5",
