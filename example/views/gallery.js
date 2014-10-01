@@ -25,7 +25,7 @@ function($) {
         
         open: function(e){
             var self = this;
-            alert("OPEN")
+
             if(e.preventDefault){
                 e.preventDefault();
             }else{

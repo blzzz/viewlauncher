@@ -3,14 +3,18 @@ define [], ->
 	cycle:
 
 		load: (next) ->
+			
 			setTimeout ->
-				console.log("header-nav loaded with timeout")
+				console.log("...header-nav testwise loaded with a short timeout")
 				next()
 			,200
 
-		perform: -> console.log "PERFORM HEADER!"
-		update: -> console.log "UPDATE HEADER!"
-
+		launch: -> console.log "LAUNCH HEADER!"
+		update: (sync) -> 
+			# sync.htmlOf( 'ul' )
+			sync.$( 'li.active', false, true )
+			# sync.classesOf( 'li' )
+			
 	events:
 
 		'click li':'sayHi'

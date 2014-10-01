@@ -1,32 +1,44 @@
 (function() {
-  require(['jquery', 'cs!sectionwrapper'], function($, SectionWrapper) {
+  require(['jquery', 'cs!launcher'], function($, Launcher) {
     return $(document).ready(function() {
       require.config({
         baseUrl: '../'
       });
-      new SectionWrapper({
+      new Launcher({
         el: 'body',
         root: '/' + location.pathname.split('/').slice(1, 3).join('/') + '/',
-        modules: {
-          '#header': 'example/modules-fe/header-nav',
-          '#footer': 'example/modules-fe/footer-nav'
-        },
-        sections: {
-          '#main': 'example/transitions/main',
-          '#header nav': {
-            transition: 'cut'
+        launchables: {
+          '#header': 'example/views/header-nav',
+          '#left': {
+            section: {
+              transition: 'cut'
+            },
+            launchables: {
+              '.fancybox-gallery': 'example/views/gallery'
+            }
+          },
+          '#main': {
+            section: 'example/transitions/main',
+            launchables: {
+              '.fancybox-gallery': 'example/views/gallery',
+              '#myWidget': 'example/views/mywidget',
+              '#test-section': {
+                section: 'example/transitions/main',
+                launchables: {
+                  '.fancybox-gallery': 'example/views/gallery'
+                }
+              }
+            }
           }
-        },
-        sectionModules: {
-          '.fancybox-gallery': 'example/modules-pg/gallery'
         }
       }).bind('all', function(event, params1, params2) {
-        console.log("______________ " + event + " ______________");
-        console.log(params1);
+        var args;
+        args = ['>>> ' + event, params1];
         if (params2) {
-          return console.log(params2);
+          args.push(params2);
         }
-      }).run('pages.json');
+        return console.log.apply(console, args);
+      }).start();
       return $('body > *').css('visibility', 'visible');
     });
   });

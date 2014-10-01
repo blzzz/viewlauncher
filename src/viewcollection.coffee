@@ -8,11 +8,19 @@ define [
 
 		constructor: (views) ->
 
+			@reset views
+
+		reset: (views) ->
+
+			if @views
+				for view in @views
+					view.remove()
 			@views = new Array()
 			if views
-				if not views.length then views = [views]
+				if not _.isArray(views) then views = new Array(views)
 				for view in views
 					@push view
+			@
 
 		push: (view) ->
 
@@ -34,7 +42,14 @@ define [
 
 		set: (property, value) ->
 
-			@each[ property ] = value
+			if _.isObject property
+				@each (view) -> 
+					for prop, val of property
+						view[ prop ] = val
+			else
+				@each (view) -> view[ property ] = value
+					
+			@
 
 		get: (property1, property2) ->
 
@@ -49,18 +64,20 @@ define [
 						when _.isArray property2 then @resolveArrayPath view, property2
 						else property2
 					results[ key ] = val
-				else 
+				else if val
 					results.push val
 			results
 
-		waitFor: (fncName, next, context = @, maxDuration = 0) ->
+		waitFor: (fncName, context = @, next, maxDuration = 0) ->
+
+			if @views.length is 0 then return next.call context
 
 			if maxDuration > 0 
 				clock = setTimeout -> 
 					throw Error "max wait duration of #{maxDuration} exceeded for function #{fncName}"
 					next.call context
 				,maxDuration
-			useArray = _.isArray fncName  
+			useArray = _.isArray fncName
 			actions = @each (view) ->
 				dfd = new $.Deferred()
 				fnc = if useArray then @resolveArrayPath(view,fncName) else	view[fncName]
@@ -70,11 +87,12 @@ define [
 			.done -> 
 				clearTimeout clock if clock
 				next.call context
+			@
 
 		resolveArrayPath: (obj, path) ->
 			
 			for chunk in path
-				obj = obj[chunk]  
+				obj = obj[chunk]
 			obj
 
 		$: (selector) ->

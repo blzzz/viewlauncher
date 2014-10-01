@@ -4,15 +4,15 @@
       cycle: {
         load: function(next) {
           return setTimeout(function() {
-            console.log("header-nav loaded with timeout");
+            console.log("...header-nav testwise loaded with a short timeout");
             return next();
           }, 200);
         },
-        perform: function() {
-          return console.log("PERFORM HEADER!");
+        launch: function() {
+          return console.log("LAUNCH HEADER!");
         },
-        update: function() {
-          return console.log("UPDATE HEADER!");
+        update: function(sync) {
+          return sync.$('li.active', false, true);
         }
       },
       events: {
