@@ -28,14 +28,15 @@ define [
 				attrs
 			manipulateContent: ($target, $source, type = 'html') -> $target.each (i) -> $(@)[ type ] $source.eq(i)[ type ]()
 			manipulateAttributes: ($target, attrs) -> $target.each (i) -> $(@).removeAttr(_.keys(attrs[i]).join(' ')).attr(attrs[i])
-			$: (path, replaceContent = true, replaceAttributes = false) -> 
+			$: (path = '', filter = '*', replaceContent = false, replaceAttributes = false) -> 
 				return false unless @sameSize path
 				sync = @
-				$el1 = @find1(path).parent().children()
-				$el2 = @find2(path).parent().children()
-				@find(path).each -> 
-					$target = $el1.eq $(@).index()
-					$source = $el2.eq $(@).index()
+				$el1 = if path isnt '' then @find1(path) else @$el1
+				$el2 = if path isnt '' then @find2(path) else @$el2
+				@find(path).filter(filter).each -> 
+					index = $(@).index()
+					$target = $el1.eq index
+					$source = $el2.eq index
 					if replaceContent then sync.manipulateContent $target, $source
 					if replaceAttributes then sync.manipulateAttributes $target, sync.readAttributes $source					
 			contentOf: (path = '', type) -> 
@@ -46,7 +47,7 @@ define [
 			textOf: (path) -> @contentOf path, 'text'
 			attributesOf: (path = '', allowedAttrs) ->
 				return false unless @sameSize path
-				@manipulateAttributes @find1(path), @readAttributes $find2(path)
+				@manipulateAttributes @find1(path), @readAttributes( @find2(path), allowedAttrs)
 				true
 			classesOf: (path) -> @attributesOf path,['class']
 			idsOf: (path) -> @attributesOf path,['id']

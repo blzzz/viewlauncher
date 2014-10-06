@@ -29,8 +29,11 @@ define [
 
 		each: (fnc, views = @views, context = @) ->
 
+			isFnc = _.isFunction fnc
+			isStr = not isFnc and _.isString fnc
 			for view, i in views 
-				fnc.call context, view, i
+				if isFnc then fnc.call context, view, i 
+				else if isStr then view[ fnc ].call context, view, i 
 
 		first: ->
 
@@ -68,7 +71,7 @@ define [
 					results.push val
 			results
 
-		waitFor: (fncName, context = @, next, maxDuration = 0) ->
+		waitFor: (fncName, context = @, next, options, maxDuration = 20000) ->
 
 			if @views.length is 0 then return next.call context
 
@@ -81,7 +84,8 @@ define [
 			actions = @each (view) ->
 				dfd = new $.Deferred()
 				fnc = if useArray then @resolveArrayPath(view,fncName) else	view[fncName]
-				fnc.call view, dfd.resolve
+				if _.isArray(options) then fnc.apply view, [dfd.resolve].concat(options)
+				else fnc.call view, dfd.resolve
 				dfd	
 			$.when.apply $, actions
 			.done -> 

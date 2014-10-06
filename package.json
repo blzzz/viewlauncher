@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Balz Rittmeyer <balz.rittmeyer@gmail.com",
+  "author": "Balz Rittmeyer",
   "license": "ISC",
   "devDependencies": {
     "grunt": "^0.4.5",
@@ -14,6 +14,30 @@
     "grunt-contrib-copy": "^0.5.0",
     "grunt-contrib-requirejs": "^0.4.4",
     "grunt-contrib-uglify": "^0.5.1",
-    "grunt-contrib-watch": "^0.6.1"
-  }
+    "grunt-contrib-watch": "^0.6.1",
+    "webpack": "^1.4.4"
+  },
+  "directories": {
+    "example": "example"
+  },
+  "dependencies": {
+    "grunt-contrib-coffee": "^0.11.1",
+    "grunt": "^0.4.5",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-contrib-copy": "^0.5.0",
+    "grunt-contrib-uglify": "^0.5.1",
+    "grunt-contrib-requirejs": "^0.4.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blzzz/viewlauncher.git"
+  },
+  "keywords": [
+    "backbone",
+    "launcher"
+  ],
+  "bugs": {
+    "url": "https://github.com/blzzz/viewlauncher/issues"
+  },
+  "homepage": "https://github.com/blzzz/viewlauncher"
 }

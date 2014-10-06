@@ -28,7 +28,7 @@ module.exports = ->
           # baseUrl: '<%= coffeeDir %>',
           mainConfigFile: '<%= rootDir %>/build.js',
           name: 'libs/require',
-          include: ['cs!sectionwrapper','css'],
+          include: ['cs!launcher','css'],
           
           # exclude: ['coffee-script'],
           stubModules: ['cs','coffee-script'],

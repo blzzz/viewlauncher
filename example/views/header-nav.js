@@ -12,7 +12,7 @@
           return console.log("LAUNCH HEADER!");
         },
         update: function(sync) {
-          return sync.$('li.active', false, true);
+          return sync.$('li', '.active', false, true);
         }
       },
       events: {

@@ -51,18 +51,21 @@ define [
 				next.to 'after', duration
 				.done done
 			whitefade: (curr, next, done, duration=1000) -> 
-				curr.to 'before', duration/2 
-				.done next.to 'after', duration/2
-				.done done
+				if curr 
+					next.to 'after', duration/2, done
+				else
+					curr.to 'before', duration/2 
+					.done next.to 'after', duration/2
+					.done done
 			crossfade: (curr, next, done, duration=1000) ->
-				curr.to 'before', duration
-				next 'after', duration
+				if curr then curr.to 'before', duration, done
+				next.to 'after', duration
 				.done done
 
 		events: 'click a[href]': (e) -> (@config.launcher || @).requestClickedLink e, @
 		
 
-	# INITIALIZING THIS SECTION AND ITS CHILDREN SECTIONS AND VIEWS:
+	# INITIALIZING THIS SECTIONS CHILDREN SECTIONS AND VIEWS:
 
 
 		initialize: (@config) -> @config.launcher.trigger 'sectionAdded', @el, @config
@@ -75,8 +78,8 @@ define [
 
 			for selector, launchable of @config.launchables 
 				{section,launchables} = launchable
-				sectionSelector = @config.sectionSelector+' '+selector
-				config = {selector, launchables, sectionSelector, section:@ }
+				sectionSelector = _.compact([@config.sectionSelector,selector]).join ' '
+				config = { selector, launchables, sectionSelector, section:@ }
 				switch
 					when section
 						sectionsLaunchables.sections.push _.extend(config, type:'section', 
@@ -86,7 +89,7 @@ define [
 					else
 						throw new Error "Invalid Hash Type: Use either a string or a section hash as value for #{selector}"		
 						
-			#load this sections sections
+			# load this sections sections
 			launcher.trigger 'launchablesRequested', @el, sectionsLaunchables
 			
 			if not @contents then @render()
@@ -97,7 +100,7 @@ define [
 				launcher.trigger 'sectionsLoaded', @sections.get( 'el'), @el
 				@sections.waitFor 'findAndLoad', @, -> 
 
-					#load this sections views
+					# load this sections views
 					@loadViews $el, sectionsLaunchables.views, ->
 						launcher.trigger 'viewsLoaded', @views.views, @el
 						if isTriggerSection is true
@@ -107,6 +110,7 @@ define [
 								next.call @
 						else 
 							launcher.trigger 'subSectionLoaded', @config.selector
+							if @cycle and @cycle.launch then @cycle.launch.call @
 							next.call @
 		
 
@@ -232,5 +236,6 @@ define [
 			
 		reloadSections: (page, next) ->
 
-			@sections.each (section) -> section.render page.sync(section.config.sectionSelector).html2()
-			@sections.waitFor 'findAndLoad', @, next
+			$el = @$el
+			@sections.each (section) -> section.render page.sync(section.config.selector,$el).html2()
+			@sections.waitFor 'findAndLoad', @, next, [true]

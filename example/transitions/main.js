@@ -18,6 +18,11 @@
         }, duration / 3).promise().done(function() {
           return next.to('after', duration / 3).done(done);
         });
+      },
+      cycle: {
+        launch: function() {
+          return console.log('Main transition launched');
+        }
       }
     };
   });

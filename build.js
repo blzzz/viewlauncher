@@ -1,6 +1,6 @@
 require.config({
   baseUrl: './src/',
-  deps: ['cs!sectionwrapper'],
+  deps: ['cs!launcher'],
   paths: {
     'backbone': '../bower_components/backbone/backbone',
     'jquery': '../bower_components/jquery/dist/jquery',

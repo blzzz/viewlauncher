@@ -11,3 +11,7 @@ define [],->
         .promise().done -> 
             next.to 'after', duration/3                 
             .done done
+
+    cycle:
+    	launch: ->
+    		console.log 'Main transition launched'

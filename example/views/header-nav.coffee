@@ -12,7 +12,7 @@ define [], ->
 		launch: -> console.log "LAUNCH HEADER!"
 		update: (sync) -> 
 			# sync.htmlOf( 'ul' )
-			sync.$( 'li.active', false, true )
+			sync.$( 'li','.active', false, true )
 			# sync.classesOf( 'li' )
 			
 	events:

@@ -60,7 +60,7 @@ define [
 		updateInstances: (nextPage, $el) ->
 
 			@each (instance) -> 
-				pageSync = nextPage.sync instance.config.sectionSelector, $el
+				pageSync = nextPage.sync instance.config.selector, $el
 				instance.cycle.update.call instance, pageSync
 
 		unloadInstances: (context, next) ->
