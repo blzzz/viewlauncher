@@ -1,6 +1,6 @@
 define [
-	'cs!section'	
-	'cs!pagecollection'
+	'cs!./section'	
+	'cs!./pagecollection'
 ], 
 (LaunchableSection, PageCollection) ->
 
@@ -23,6 +23,8 @@ define [
 			pushState: on
 			sectionContentClassName: 'section-content'
 			imagesToLoad: 'img:not(.dont-preload)'
+			launchablesDir:'./'
+			minLoadingTime: 0
 
 		initialize: (config) ->
 
@@ -33,7 +35,7 @@ define [
 			# instantiate backbone router and start history
 			launcher = @
 			Router = Backbone.Router.extend				
-				routes: '':'request', ':href':'request'
+				routes: '':'request', '*path':'request'
 				request: (href) -> launcher.requestPage href, true
 			@router = new Router()	
 			Backbone.history.start pushState: @config.pushState, root: @config.root, silent: on
@@ -53,39 +55,40 @@ define [
 			$a = $ e.currentTarget
 			href = prop: ($a.prop 'href'), attr: ($a.attr 'href')
 			root = location.protocol + '//' + location.host + @config.root
-			if e.preventDefault then e.preventDefault() else e.returnValue = false
 			if href.prop.slice(0, root.length) is root  
+				if e.preventDefault then e.preventDefault() else e.returnValue = false
 				@requestPage href.attr, false, section
 
 		requestPage: (href = '', byRoute = false, clickSection = null) ->
 
+			if @loading and @loading.state() is 'pending' or @currPage?.get('href') is href then return
+
 			byClick = not byRoute and clickSection isnt null
 			byCall = not byRoute and not byClick
+			getSectionByPageRoute = @config.getSectionByPageRoute
+			launcher = @
+			section = switch
+				when byClick and clickSection.sections.length > 0 then clickSection
+				when byRoute and getSectionByPageRoute then getSectionByPageRoute.call launcher, href
+				else @
+			console.log getSectionByPageRoute()
+			if byClick then Backbone.history.navigate href, silent: yes
 
-			if @loading and @loading.state() is 'pending' then return
-			if @currPage?.get('href') is href then return	
-			if byClick then	Backbone.history.navigate href, silent: yes
-			
-			@trigger 'pageRequested', {href, byCall, byClick, byRoute}
+			@trigger 'pageRequested', {href, byCall, byClick, byRoute, section, sections:section?.sections}
 			@pages.byHref href, @, (page) -> 
 
 				@trigger 'pageFetched', page				
-				loading = @loading = new $.Deferred()
-				
+				loading = @loading = new $.Deferred()	
+
 				$('html > head > title').text page.get('title')
 
-				launcher = @
+				
 				launcher.nextPage = page
-				done = ->
+				section.reload page, byCall, ->
+					
 					launcher.nextPage = null
 					launcher.currPage = page
 					launcher.trigger 'transitionDone', @el
 					loading.resolve launcher
+					
 
-				switch
-					when byCall
-						@findAndLoad( done, true )
-					when byClick
-						clickSection.reloadAll page, done
-					when byRoute # TODO: reloadAll is not that nice 
-						@reloadAll page, done

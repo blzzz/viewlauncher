@@ -15,9 +15,9 @@ define [
 			if @views
 				for view in @views
 					view.remove()
-			@views = new Array()
+			@views = []
 			if views
-				if not _.isArray(views) then views = new Array(views)
+				if not _.isArray(views) then views = [views]
 				for view in views
 					@push view
 			@
@@ -35,13 +35,26 @@ define [
 				if isFnc then fnc.call context, view, i 
 				else if isStr then view[ fnc ].call context, view, i 
 
+		find: (key,value) ->
+
+			@where( key,value )[0]
+
+		where: (key,value, limit) ->
+			
+			results = []
+			isArray = _.isArray key
+			@each (view) -> 
+				val = if isArray then @resolveArrayPath(view, key) else view[ key ]
+				if val is value then results.push view
+			results
+
 		first: ->
 
-			@views[0]
+			@views.slice(0,1)[0]
 
 		last: ->
 
-			@views[@length-1]
+			@views.slice(-1)[0]
 
 		set: (property, value) ->
 
@@ -71,12 +84,19 @@ define [
 					results.push val
 			results
 
-		waitFor: (fncName, context = @, next, options, maxDuration = 20000) ->
+		waitFor: (fncName, context = @, next, options, minDuration = 0, maxDuration = 20000) ->
 
-			if @views.length is 0 then return next.call context
+			# if @views.length is 0 then return next.call context
 
+			isDone = no
+			waitForMinDuration = minDuration > 0
+
+			if waitForMinDuration
+				setTimeout -> 
+					if isDone then next.call(context) else waitForMinDuration = no
+				,minDuration
 			if maxDuration > 0 
-				clock = setTimeout -> 
+				maxClock = setTimeout -> 
 					throw Error "max wait duration of #{maxDuration} exceeded for function #{fncName}"
 					next.call context
 				,maxDuration
@@ -89,8 +109,9 @@ define [
 				dfd	
 			$.when.apply $, actions
 			.done -> 
-				clearTimeout clock if clock
-				next.call context
+				if maxClock then clearTimeout maxClock 
+				if not waitForMinDuration then next.call(context)
+				isDone = yes
 			@
 
 		resolveArrayPath: (obj, path) ->

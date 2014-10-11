@@ -39,26 +39,26 @@ define [
 		transitionStates:
 			
 			before: display:'block', opacity:0, position:'absolute', top:0, left:0
-			after: opacity: 1
+			after: position:'absolute', opacity: 1
 			final: position:'static'
 
 		transitionPresets:
 
 			cut: (curr, next, done) -> 				
+				if curr then curr.to 'after'
 				next.to 'after'
 				done()
 			fadein: (curr, next, done, duration=1000) -> 
+				if curr then curr.to 'after'
 				next.to 'after', duration
 				.done done
 			whitefade: (curr, next, done, duration=1000) -> 
-				if curr 
-					next.to 'after', duration/2, done
-				else
-					curr.to 'before', duration/2 
-					.done next.to 'after', duration/2
-					.done done
+				if not curr then return next.to 'after', duration/2, done
+				curr.to('after').to('before', duration/2) 
+				.done next.to 'after', duration/2
+				.done done
 			crossfade: (curr, next, done, duration=1000) ->
-				if curr then curr.to 'before', duration, done
+				if curr then curr.to('after').to('before', duration, done)
 				next.to 'after', duration
 				.done done
 
@@ -74,18 +74,19 @@ define [
 			
 			isLauncher = not @config.launcher
 			launcher = if isLauncher then @ else @config.launcher 
+			{launchablesDir} = launcher.config
 			sectionsLaunchables = { sections:[], views:[] }
 
 			for selector, launchable of @config.launchables 
 				{section,launchables} = launchable
 				sectionSelector = _.compact([@config.sectionSelector,selector]).join ' '
-				config = { selector, launchables, sectionSelector, section:@ }
+				config = { selector, launchables, sectionSelector, section:@, launcher }
 				switch
 					when section
 						sectionsLaunchables.sections.push _.extend(config, type:'section', 
-						if _.isString section then source:section else extension:section)	
+						if _.isString section then source:launchablesDir+section else extension:section)	
 					when _.isString launchable
-						sectionsLaunchables.views.push _.extend config, type:'view', source:launchable
+						sectionsLaunchables.views.push _.extend config, type:'view', source:launchablesDir+launchable
 					else
 						throw new Error "Invalid Hash Type: Use either a string or a section hash as value for #{selector}"		
 						
@@ -94,19 +95,19 @@ define [
 			
 			if not @contents then @render()
 			$el = @contents.last().$el
-			
+			minLoadingTime = if isTriggerSection then launcher.config.minLoadingTime else 0
+
 			@loadSections $el, sectionsLaunchables.sections, ->
 
-				launcher.trigger 'sectionsLoaded', @sections.get( 'el'), @el
 				@sections.waitFor 'findAndLoad', @, -> 
 
 					# load this sections views
-					@loadViews $el, sectionsLaunchables.views, ->
+					@loadViews $el, sectionsLaunchables.views, minLoadingTime, ->
 						launcher.trigger 'viewsLoaded', @views.views, @el
 						if isTriggerSection is true
-							@sections.waitFor 'playTransition', @, -> 
-								@views.launchInstances(false)
-								@trigger 'launchSectionReady', @views
+							@sections.waitFor 'playTransition', @, ->
+								@views.launchInstances false
+								launcher.trigger 'sectionReady', @sections.get('el'), @el
 								next.call @
 						else 
 							launcher.trigger 'subSectionLoaded', @config.selector
@@ -193,7 +194,7 @@ define [
 							delete section.extension.transitionStates
 						
 						section = new (exports.Section.extend section.extension) 
-							el: $ section.selector
+							el: $el.find section.selector
 							launchables: section.launchables
 							selector: section.selector
 							sectionSelector: section.sectionSelector
@@ -209,13 +210,13 @@ define [
 				)
 				next.call parentSection
 
-			if requiredSections.length is 0 then sectionsLoaded.call parentSection 
+			if requiredSections.length is 0 then sectionsLoaded.call @ 
 			else require _.pluck(requiredSections, 'source'), sectionsLoaded
 		
-		loadViews: ($el, views, next) ->
+		loadViews: ($el, views, minLoadingTime, next) ->
 			
 			@views = @contents.last().views = new ViewLoader()
-			.detectAndLoad views, $el, @, ->
+			.findAndLoad views, $el, @, minLoadingTime, ->
 				section = @
 				@loadContentAssets -> next.call section
 		
@@ -228,7 +229,9 @@ define [
 	# RELOADING SECTIONS AND UPDATING VIEW INSTANCES
 
 
-		reloadAll: (page, next) ->
+		reload: (page, doInitialize, next) ->
+
+			if doInitialize then return @findAndLoad next, true
 
 			@reloadSections page, ->
 				@views.updateInstances page, @$el

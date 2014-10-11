@@ -11,13 +11,13 @@ define [
 
 		SelectorSync: class
 
-			constructor: (@$el1, @$el2) -> @
+			constructor: (@$el1, @$el2, @path) -> @
 			html1: -> @$el1.html()
 			html2: -> @$el2.html()
-			find: (path) -> @$el1.find(path).add( @$el2.find(path) )
+			find: (path) -> @find1(path).add( @find2(path) )
 			find1: (path = '') -> @$el1.find path
 			find2: (path = '') -> @$el2.find path
-			sameSize: (path) -> @find1(path).length is @find2(path).length
+			sameSize: (path, filter='*') -> @find1(path).filter(filter).length is @find2(path).filter(filter).length
 			readAttributes: ($target, allowedAttrs) ->
 				attrs = []
 				$target.each -> 
@@ -28,7 +28,7 @@ define [
 				attrs
 			manipulateContent: ($target, $source, type = 'html') -> $target.each (i) -> $(@)[ type ] $source.eq(i)[ type ]()
 			manipulateAttributes: ($target, attrs) -> $target.each (i) -> $(@).removeAttr(_.keys(attrs[i]).join(' ')).attr(attrs[i])
-			$: (path = '', filter = '*', replaceContent = false, replaceAttributes = false) -> 
+			$: (path = '', filter, replaceContent = false, replaceAttributes = false) -> 
 				return false unless @sameSize path
 				sync = @
 				$el1 = if path isnt '' then @find1(path) else @$el1
@@ -69,7 +69,7 @@ define [
 				fetch: (context, next) ->
 
 					page = @
-					url = page.collection.config.root + page.get 'href'
+					url = page.collection.config.root + '/' + page.get 'href'
 					@fetching = $.ajax type: 'GET', url: url
 					.done (html) ->
 						page.parseHtml html
@@ -90,7 +90,7 @@ define [
 
 					@get('$html').find path
 
-				sync: (path = '', $el = $('html')) -> new @collection.SelectorSync $el.find(path), @$(path)
+				sync: (path = '', $el = $('html')) -> new @collection.SelectorSync $el.find(path), @$(path), path
 
 
 
@@ -102,6 +102,7 @@ define [
 		
 		byHref: (href, context, next) ->
 
+			href = if href.slice(0,1) is '/' then href.slice(1) else href
 			if page = @findWhere(href:href)
 				next.call context, page
 			else

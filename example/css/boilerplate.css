@@ -178,19 +178,115 @@ body:before {
     height:100%;
     background: #DDD;
 }
-#loading-indicator {    
-    position: fixed;
+
+
+/** GENERAL CLASSES **/
+
+.loader {
+    position: absolute;
     top: 0px;
     left: 0px;
-    background:rgba(0,0,0,0.8);
+    background:rgba(0,0,0,0.1);
     width:100%;
     height:100%;
     z-index: 1;
     display:none;
 }
-
-
-/** GENERAL CLASSES **/
+.loader .throbber-container {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  margin: -150px 0 0 -150px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  border-radius: 100%;
+  width: 300px;
+  height: 300px;
+}
+.loader .throbber-container .throbber {
+  width: 40px;
+  height: 40px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+.loader .throbber-container .throbber:after {
+  width: 40px;
+  height: 40px;
+  -webkit-animation: rotate 0.6s linear infinite;
+  -moz-animation: rotate 0.6s linear infinite;
+  -ms-animation: rotate 0.6s linear infinite;
+  -o-animation: rotate 0.6s linear infinite;
+  animation: rotate 0.6s linear infinite;
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  border-radius: 100%;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #CCC;
+  border-left: 1px solid #000;
+  border-right: 1px solid #CCC;
+  content: '';
+  opacity: 1;
+}
+@-moz-keyframes rotate {
+  0% {
+    -webkit-transform: rotateZ(-360deg);
+  }
+  100% {
+    -webkit-transform: rotateZ(0deg);
+  }
+}
+@-webkit-keyframes rotate {
+  0% {
+    -webkit-transform: rotateZ(-360deg);
+  }
+  100% {
+    -webkit-transform: rotateZ(0deg);
+  }
+}
+@-o-keyframes rotate {
+  0% {
+    -webkit-transform: rotateZ(-360deg);
+  }
+  100% {
+    -webkit-transform: rotateZ(0deg);
+  }
+}
+@keyframes rotate {
+  0% {
+    -webkit-transform: rotateZ(-360deg);
+  }
+  100% {
+    -webkit-transform: rotateZ(0deg);
+  }
+}
 
 
 /** MODULES **/
