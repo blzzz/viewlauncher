@@ -1,7 +1,7 @@
 define([
     'jquery',
-    'bower_components/fancybox/source/jquery.fancybox.pack',
-    'css!bower_components/fancybox/source/jquery.fancybox.css'
+    '../node_modules/fancybox/dist/js/jquery.fancybox.pack',
+    '../node_modules/fancybox/dist/css/jquery.fancybox.css'
 ],
 
 function($) {

@@ -1,70 +1,68 @@
-define [
-	'require'
-	'underscore'
-	'backbone'
-	'jquery'
-	'cs!viewcollection'
-],
-(require,_,Backbone,$,ViewCollection) ->
+class ViewLoader extends ViewCollection
+		
+	constructor: (views) -> super views
+
+	ViewPrototype: 
+		
+		initialize: (@config) ->
+
+		cycle:
+			load: (next) -> next.call @ 					
+			launch: ->	
+			update: -> 					
+			unload: (next) -> next.call @
+
+	findAndLoad: (views, $html, context, minLoadingTime, next ) ->
+
+		detectedViews = _.filter views, (view) -> $html.is ":has(#{view.selector})"
+
+		requirePaths = for view, i in detectedViews
+			if view.requirePath then view.requirePath
+			else @createViewInstances($html,view,view)
+		
+		# if requirePaths.length and typeof require is 'function'
+		# 	loader = @
+		# 	require requirePaths, ->
+		# 		for view, i in detectedViews
+		# 			loader.createViewInstances($html,view,arguments[i])
+
+		# 		loader.loadInstances context, next, minLoadingTime	
+		# else
+		# 	@loadInstances context, next, minLoadingTime
+		@loadInstances context, next, minLoadingTime
+		@
 	
-	class ViewLoader extends ViewCollection
-		
-		constructor: (views) -> super views
 
-		ViewPrototype: 
+	createViewInstances: ($html,viewLoader,viewPrototype)->
+
+		loader = @
+		$html.find(viewLoader.selector).each (i) -> 	
+						
+			defaultModule = _.extend {}, loader.ViewPrototype
+			defaultCycle = _.extend {}, defaultModule.cycle
 			
-			initialize: (@config) ->
-
-			cycle:
-				load: (next) -> next.call @ 					
-				launch: ->	
-				update: -> 					
-				unload: (next) -> next.call @
-
-		findAndLoad: (views, $html, context, minLoadingTime, next ) ->
-
-			detectedViews = for view in views 
-				if $html.is ":has(#{view.selector})" then view else continue	
-
-			requirePaths = _.pluck detectedViews, 'source'
-			loader = @
-			if requirePaths.length is 0 then loader.loadInstances context, next, minLoadingTime	
-			else
-				require requirePaths, ->
-					for view, i in detectedViews
-						Prototype = arguments[i]
-						$html.find(view.selector).each (i) -> 	
-							
-							config = _.extend el:$(@), view
-							
-							defaultModule = _.extend {}, loader.ViewPrototype
-							defaultCycle = _.extend {}, defaultModule.cycle
-							
-							extension = _.extend defaultModule, Prototype
-							extension.cycle = _.extend defaultCycle, extension.cycle
-							Prototype = Backbone.View.extend extension
-							
-							loader.push new Prototype(config)
-
-					loader.loadInstances context, next, minLoadingTime	
-			@
-		
-		loadInstances: (context, next, minLoadingTime = 0) ->
+			extension = _.extend defaultModule, viewPrototype
+			extension.cycle = _.extend defaultCycle, extension.cycle
+			viewPrototype = Backbone.View.extend extension
 			
-			@waitFor ['cycle','load'], context, next, null, minLoadingTime
+			loader.push new viewPrototype(_.extend el:$(@), viewLoader)
 
-		launchInstances: ->
-
-			@each (instance) -> instance.cycle.launch.call instance
+	loadInstances: (context, next, minLoadingTime = 0) ->
 		
-		updateInstances: (nextPage, $el) ->
+		@waitFor ['cycle','load'], context, next, null, minLoadingTime
 
-			@each (instance) -> 
-				pageSync = nextPage.sync instance.config.selector, $el
-				instance.cycle.update.call instance, pageSync
+	launchInstances: ->
 
-		unloadInstances: (context, next) ->
+		@each (instance) -> instance.cycle.launch.call instance
+	
+	updateInstances: (nextPage, $el) ->
 
-			@waitFor ['cycle','unload'], @, ->
-				@reset()
-				next.call context
+		@each (instance) -> 
+			pageSync = nextPage.sync instance.config.selector, $el
+			instance.cycle.update.call instance, pageSync
+
+	unloadInstances: (context, next) ->
+
+		@waitFor ['cycle','unload'], @, ->
+			@reset()
+			next.call context

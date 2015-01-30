@@ -1,94 +1,104 @@
-define [
-	'cs!./section'	
-	'cs!./pagecollection'
-], 
-(LaunchableSection, PageCollection) ->
+Launcher = exports.Section.extend
+	
+	currPage: null
 
-	LaunchableSection.extend
+	nextPage: null
+
+	pages: null
+
+	router: null
+
+	loading: false
+
+	config:
+
+		maxTransitionTime: 10000
+		root: ''
+		pushState: on
+		sectionContentClassName: 'section-content'
+		imagesToLoad: 'img:not(.dont-preload)'
+		minLoadingTime: 0
+
+	initialize: (config) ->
+
+		@config = _.extend @config, config, sectionSelector: ''
+
+	start: ->
+
+		# instantiate backbone router and start history
+		launcher = @
+		Router = Backbone.Router.extend				
+			routes: '':'request', '*path':'request'
+			request: (href) -> launcher.requestPage(href, 'navigated')
+		@router = new Router()	
+		Backbone.history.start pushState: @config.pushState, root: @config.root, silent: on
+		@trigger 'historyStarted', @router
+
+		href = Backbone.history.fragment
+		@pages = new PageCollection @config.pages, 
+			root: @config.root 
+			initialHref: href
+			initialHtml: $('html').html()
+		@requestPage(href, 'called')
+		@
+
+	requestClickedLink: (e,section = @) ->
+
+		e.stopPropagation()
+		$a = $ e.currentTarget
+		href = prop: ($a.prop 'href'), attr: ($a.attr 'href')
+		root = location.protocol + '//' + location.host + @config.root
+		if href.prop.slice(0, root.length) is root  
+			if e.preventDefault then e.preventDefault() else e.returnValue = false
+			if @requestPage(href.attr, 'linked', {section}) then Backbone.history.navigate( href.attr, silent: yes)
+
+	getSectionToRefresh: (type, opts)->
 		
-		currPage: null
+		{section,href} = opts
+		{getSectionByHrefChange} = @config
 
-		nextPage: null
+		switch type
+			
+			# called – launcher section gets initialized
+			when 'called'
+				@
+			
+			# linked – a sub-section to feed with content is needed
+			#          otherwise the launcher section is used
+			when 'linked'
+				if section and section.sections.length > 0 then section else @
+			
+			# navigated – a section is to be determined by source and target hrefs
+			when 'navigated'
+				if getSectionByHrefChange then getSectionByHrefChange.call(@, @currPage.get('href'), href) else @
+			
+			else throw new Error('invalid request type')
 
-		pages: null
+	requestPage: (href, type, opts = {} ) -> # byRoute = false, activeSection = null) ->
 
-		router: null
+		return false if @loading and @loading.state() is 'pending' or @currPage?.get('href') is href
 
-		loading: false
+		# determine section responsible for the display of new content
+		section = @getSectionToRefresh( type, _.extend(opts,{href}) )
 
-		config:
+		# request the page and replace the target section's content
+		launcher = @
+		@trigger 'pageRequested', {href, type, section, sections:section?.sections}
+		@pages.byHref href, @, (page) -> 
 
-			maxTransitionTime: 10000
-			root: ''
-			pushState: on
-			sectionContentClassName: 'section-content'
-			imagesToLoad: 'img:not(.dont-preload)'
-			launchablesDir:'./'
-			minLoadingTime: 0
+			@trigger 'pageFetched', page				
+			loading = @loading = new $.Deferred()	
 
-		initialize: (config) ->
+			@nextPage = page
 
-			@config = _.extend @config, config, sectionSelector: ''
-
-		start: ->
-
-			# instantiate backbone router and start history
-			launcher = @
-			Router = Backbone.Router.extend				
-				routes: '':'request', '*path':'request'
-				request: (href) -> launcher.requestPage href, true
-			@router = new Router()	
-			Backbone.history.start pushState: @config.pushState, root: @config.root, silent: on
-			@trigger 'historyStarted', @router
-
-			href = Backbone.history.fragment
-			@pages = new PageCollection @config.pages, 
-				root: @config.root 
-				initialHref: href
-				initialHtml: $('html').html()
-			@requestPage href
-			@
-
-		requestClickedLink: (e,section = @) ->
-
-			e.stopPropagation()
-			$a = $ e.currentTarget
-			href = prop: ($a.prop 'href'), attr: ($a.attr 'href')
-			root = location.protocol + '//' + location.host + @config.root
-			if href.prop.slice(0, root.length) is root  
-				if e.preventDefault then e.preventDefault() else e.returnValue = false
-				@requestPage href.attr, false, section
-
-		requestPage: (href = '', byRoute = false, clickSection = null) ->
-
-			if @loading and @loading.state() is 'pending' or @currPage?.get('href') is href then return
-
-			byClick = not byRoute and clickSection isnt null
-			byCall = not byRoute and not byClick
-			getSectionByPageRoute = @config.getSectionByPageRoute
-			launcher = @
-			section = switch
-				when byClick and clickSection.sections.length > 0 then clickSection
-				when byRoute and getSectionByPageRoute then getSectionByPageRoute.call launcher, href
-				else @
-			console.log getSectionByPageRoute()
-			if byClick then Backbone.history.navigate href, silent: yes
-
-			@trigger 'pageRequested', {href, byCall, byClick, byRoute, section, sections:section?.sections}
-			@pages.byHref href, @, (page) -> 
-
-				@trigger 'pageFetched', page				
-				loading = @loading = new $.Deferred()	
-
-				$('html > head > title').text page.get('title')
-
+			section.reload( page, ->
 				
-				launcher.nextPage = page
-				section.reload page, byCall, ->
-					
-					launcher.nextPage = null
-					launcher.currPage = page
-					launcher.trigger 'transitionDone', @el
-					loading.resolve launcher
-					
+				@nextPage = null
+				@currPage = page
+				@trigger 'transitionDone', @el
+				loading.resolve launcher
+			
+			,@)	
+		
+		return true
 

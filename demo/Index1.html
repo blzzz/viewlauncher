@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
 	<title>Page 2</title>
-	<link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">	
-	<link rel="stylesheet" type="text/css" href="../example/css/index.css">
-	<script data-main="../example/main" type="text/javascript" src="../build/viewlauncher.js"></script>	
+	<link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.js"></script>
+	<script type="text/javascript" src="./bundle.min.js"></script>
 </head>
 <body>
 	<div id="wrapper">
@@ -21,7 +22,11 @@
 			<section id="main">
 				<div class="inside">
 					<h1>Welcome on Page 2!</h1>
-					<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+					<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed <a href="#">diam</a> nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+					<div id="test-section" style="position:relative;height:50px">
+						This is a Test Section...
+						<div id="another-div">inside the div...</div>
+					</div>
 					<div class="fancybox-gallery">
 						<h1>This is a Page Module:</h1>
 						<ul>
@@ -37,7 +42,7 @@
 			</section>	
 			<section id="left">
 				<div class="inside">
-					<p>Content on the left side...</p>
+					<p>Slighly different content on the left side...</p>
 				</div>
 			</section>	
 		</div>
@@ -47,6 +52,5 @@
 			<span>This is the footer</span>
 		</div>
 	</footer>
-	<div id="loading-indicator"></div>
 </body>
 </html>
