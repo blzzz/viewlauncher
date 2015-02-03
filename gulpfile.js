@@ -1,23 +1,27 @@
 var gulp = require('gulp');
 var coffee = require('gulp-coffee');
 var minify = require('gulp-minify');
-// var concat = require('gulp-concat');
-var defineModule = require('gulp-define-module');
-var amdOptimize = require('gulp-amd-optimizer');
-// var wrap = require('gulp-wrap');
 var concat = require('gulp-concat-util');
 var umd = require('gulp-umd');
 var webpack = require('gulp-webpack');
 var clone = require('gulp-clone');
 var sourcemaps = require('gulp-sourcemaps');
+var webpackModule = require('webpack')
+var watch = require('gulp-watch');
 
 
 gulp.task('default', function() {
-  
+	gulp.start(['build','demo','watch']);
+});
 
-  // place code for your default task here
 
-
+gulp.task('watch', function () {
+    watch(['./src/*.coffee'], function () {
+        gulp.start(['build']);
+    });
+    watch(['./dist/viewlauncher.js','./demo/**/*.coffee'], function () {
+        gulp.start(['demo']);
+    });
 });
 
 
@@ -41,25 +45,23 @@ gulp.task('build', function() {
 		.pipe(concat('viewlauncher.js'))
 		.pipe(sourcemaps.init())
 		.pipe(coffee({bare:true,sourceMap:true}))
-		.pipe(sourcemaps.write())
 		.pipe(umd({
 			dependencies: function(file) {
           		return [
 					{	
 						amd:'jquery',
+						cjs:'jquery',
 						name:'$'
 					},
 					{
-						amd:'backbone',
-						name:'Backbone'
-					},
-					{
 						amd:'underscore',
+						cjs:'underscore',
 						name:'_'
 					},
 					{
-						amd:'exports',
-						name:'exports'
+						amd:'backbone',
+						cjs:'backbone',
+						name:'Backbone'
 					}
 				]
 			},
@@ -68,18 +70,20 @@ gulp.task('build', function() {
         	},        	
 		}))
 		.pipe(minify())	
+		.pipe(sourcemaps.write())
 		.pipe(gulp.dest('dist'));
 
 	
 
 });
 
+
 gulp.task('demo',function(){
 	gulp.src('./demo/main.coffee')
 		.pipe(webpack({ 
-			// plugins: [
-			// 	new webpack.optimize.UglifyJsPlugin({minimize: true})
-			// ],
+			plugins: [
+				new webpackModule.optimize.UglifyJsPlugin({minimize: true})
+			],
 			module: {
 				loaders: [
 					{ test: /\.coffee$/, loader: "coffee" },
@@ -114,7 +118,6 @@ gulp.task('demo',function(){
 		        "jquery": "jQuery"
 		    }
 		 }))
-		// .pipe(minify())
         .pipe(gulp.dest('demo'));
 
 })
