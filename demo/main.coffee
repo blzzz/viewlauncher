@@ -37,14 +37,13 @@ Header =
 		@$el.css 'background-color', @getRandomColor()
 
 
-
 # MAIN VIEW
 
 MainSection =
 
-	# transitionStates:
-
-	# 	final: position:'static' # , background:'red'
+	transitionStates:
+		
+		final: position:'static', background:'red'
 
 	transition: (curr, next, done, duration=900) ->
 
@@ -60,7 +59,22 @@ MainSection =
 			console.log 'Main transition launched'
 
 
+Widget = 
+	cycle:
+		load: (next)-> 
+			console.log("Widget says: LOAD")
+			next()
+		launch: -> console.log("Widget says: LAUNCH")
+		unload: (next) -> 
+			console.log("Widget says: UNLOAD") 
+			next()
+	
+	events:
+		'click *': -> console.log "Widget says: You clicked the Widget!"
+
+
 Gallery = require('./gallery.js')
+
 
 $(document).ready ->
 
@@ -88,7 +102,7 @@ $(document).ready ->
 				section: MainSection
 				launchables:
 					'.fancybox-gallery': Gallery
-					'#myWidget': 'mywidget'
+					'#myWidget': Widget
 					'#test-section':
 						section: MainSection
 						launchables:
