@@ -1,8 +1,8 @@
 {
   "name": "viewlauncher",
   "version": "1.0.0",
-  "description": "viewlauncher parses a websites markup for sections and modules and loads the corresponding Backbone View modules",
-  "main": "example/index.html",
+  "description": "ViewlauncherJS allows to automatically launch Backbone Views and thus to extend HTML elements with user interaction and transition machanisms",
+  "main": "dist/viewlauncher.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,10 +17,15 @@
     "grunt-contrib-watch": "^0.6.1",
     "gulp-clone": "^1.0.0",
     "gulp-concat-util": "^0.5.1",
+    "jasmine-core": "^2.1.3",
+    "karma": "^0.12.31",
+    "karma-chrome-launcher": "^0.1.7",
+    "karma-jasmine": "^0.3.5",
     "webpack": "^1.4.4"
   },
   "directories": {
-    "example": "example"
+    "lib": "src",
+    "example": "demo"
   },
   "dependencies": {
     "backbone": "^1.1.2",
@@ -28,28 +33,23 @@
     "coffee": "^1.0.0",
     "coffee-loader": "^0.7.2",
     "fancybox": "^2.1.6",
-    "file-loader": "^0.8.1",
-    "grunt": "^0.4.5",
-    "grunt-contrib-coffee": "^0.11.1",
-    "grunt-contrib-copy": "^0.5.0",
-    "grunt-contrib-requirejs": "^0.4.4",
-    "grunt-contrib-uglify": "^0.5.1",
-    "grunt-contrib-watch": "^0.6.1",
     "gulp": "^3.8.10",
-    "gulp-amd-optimizer": "^0.3.2",
     "gulp-coffee": "^2.2.0",
     "gulp-concat": "^2.4.3",
-    "gulp-define-module": "^0.1.1",
     "gulp-minify": "0.0.5",
     "gulp-sourcemaps": "^1.3.0",
     "gulp-umd": "^0.1.3",
+    "gulp-watch": "^4.1.0",
     "gulp-webpack": "^1.1.2",
     "gulp-webpack-config": "^0.1.5",
+    "jasmine-jquery": "^2.0.6",
     "jquery": "^2.1.3",
+    "require": "^2.4.17",
     "style-loader": "^0.8.3",
     "underscore": "^1.7.0",
+    "webpack": "^1.5.3",
     "url-loader": "^0.5.5",
-    "webpack": "^1.5.3"
+    "file-loader": "^0.8.1"
   },
   "repository": {
     "type": "git",
@@ -57,7 +57,12 @@
   },
   "keywords": [
     "backbone",
-    "launcher"
+    "launcher",
+    "viewlauncher",
+    "section",
+    "sections",
+    "sectionview",
+    "elementsynchronizer",
   ],
   "bugs": {
     "url": "https://github.com/blzzz/viewlauncher/issues"
