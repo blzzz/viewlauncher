@@ -1,3 +1,4 @@
+exports = exports or {}
 exports.Section = 
 
 	Backbone.View.extend
@@ -172,24 +173,17 @@ exports.Section =
 			requiredSections = _.filter detectedSections, (section) ->  _.isString section.requirePath
 
 			launcher = @config.launcher or @
-			# sectionsLoaded = ->
-
-				# if arguments then for extension, i in arguments 
-				# 	requiredSections[ i ].extension = extension	
-				
 				
 			@sections = @contents.last().sections = new ViewCollection().reset( 
 				for section in detectedSections
-				
-					# if section.extension.transitionStates
-					# 	stateExtension = _.extend {}, section.extension.transitionStates
-					# 	delete section.extension.transitionStates
-					# console.log section
-					# {transitionStates} = section.extension
-
-					# 	stateExtension = _.extend {}, section.extension.transitionStates
-					# 	delete section.extension.transitionStates
-
+					
+					# conserve section properties
+					{transitionStates} = section.extension
+					if transitionStates
+						transitionStates = _.extend {}, transitionStates
+						delete section.extension.transitionStates
+					
+					# instantiate extended section 
 					ExtendedSection = exports.Section.extend( section.extension )
 					section = new ExtendedSection(
 						el: $el.find section.selector
@@ -200,21 +194,15 @@ exports.Section =
 						launcher: launcher
 						imagesToLoad: launcher.config.imagesToLoad
 					)
-					# if stateExtension
-					# 	section.transitionStates = _.extend {}, section.transitionStates, stateExtension 
-					# 	stateExtension = null
-					# if transitionStates
-					# 	section.transitionStates = _.extend {}, OriginalSection.transitionStates, section.transitionStates 
-					
-					# console.log section.transitionStates
+
+					# extend section with conserved properties
+					if transitionStates
+					 	_.extend section.transitionStates, transitionStates 
 
 					section
 			)
-			next.call @ #, detectedSections
+			next.call @
 
-			# if requiredSections.length and typeof require is 'function' then require _.pluck(requiredSections, 'requirePath'), sectionsLoaded
-			# else sectionsLoaded.call @ 
-			# sectionsLoaded.call @ 
 		
 		loadViews: ($el, views, minLoadingTime, next) ->
 			

@@ -63,8 +63,7 @@ Launcher = exports.Section.extend
 			when 'called'
 				@
 			
-			# linked – a sub-section to feed with content is needed
-			#          otherwise the launcher section is used
+			# linked – a sub-section to feed with content is needed; otherwise the launcher section is used
 			when 'linked'
 				if section and section.sections.length > 0 then section else @
 			
