@@ -11,14 +11,13 @@ PageModel = Backbone.Model.extend
 
 	fetch: (context, next) ->
 
-		page = @
-		url = page.collection.config.root + '/' + page.get 'href'
+		url = @collection.config.loadRoot + '/' + @get 'href'
 		@fetching = $.ajax type: 'GET', url: url
-		.done (html) ->
-			page.parseHtml html
-			next.call context, page	
-		.fail (error)->
-			throw new Error "Couldn't load page #{url} (#{error.statusText})"				
+		.done _.bind (html) ->
+			@parseHtml html
+			next.call context, @	
+		,@
+		.fail (error)-> throw new Error "Couldn't load page #{url} (#{error.statusText})"				
 
 	parseHtml: (html) ->
 
@@ -29,15 +28,8 @@ PageModel = Backbone.Model.extend
 		@set 'title', $html.filter('title').text()
 		@
 
-	is: (className) ->
+	is: (className) -> _.indexOf( @get('bodyClasses'), className) >= 0
 
-		bodyClasses = @get 'bodyClasses'
-		_.indexOf(bodyClasses,className) >= 0
+	$: (path) -> @get('$html').find path
 
-	$: (path) ->
-
-		@get('$html').find path
-
-	sync: (path = '', $currContext = $('html')) -> 
-
-		new ElementSynchronizer $currContext.find(path), @$(path), path
+	sync: (path = '', $currContext = $('html')) ->  new ElementSynchronizer $currContext.find(path), @$(path), path

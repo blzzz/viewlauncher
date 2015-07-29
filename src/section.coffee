@@ -148,7 +148,7 @@ exports.Section =
 				section.resetContent nextContent.to 'final'
 				next.call section 
 			
-			transitionFnc = if _.isString @transition then @transitionPresets[@transition] else @transition
+			transitionFnc = if _.isString @transition then @transitionPresets[@transition] else @transition or @transitionPresets['cut']
 			transitionFnc.call @, currContent, nextContent, done, @config.duration		
 
 		launchViews: (launchSectionsViews = true) ->
@@ -207,7 +207,7 @@ exports.Section =
 		loadViews: ($el, views, minLoadingTime, next) ->
 			
 			@views = @contents.last().views = new ViewLoader()
-			.findAndLoad views, $el, @, minLoadingTime, ->
+			@views.findAndLoad views, $el, @, minLoadingTime, ->
 				section = @
 				@loadContentAssets -> next.call section
 		

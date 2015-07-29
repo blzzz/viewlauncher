@@ -14,6 +14,7 @@ Launcher = exports.Section.extend
 
 		maxTransitionTime: 10000
 		root: ''
+		loadRoot: ''
 		pushState: on
 		sectionContentClassName: 'section-content'
 		imagesToLoad: 'img:not(.dont-preload)'
@@ -32,11 +33,13 @@ Launcher = exports.Section.extend
 			request: (href) -> launcher.requestPage(href, 'navigated')
 		@router = new Router()	
 		Backbone.history.start pushState: @config.pushState, root: @config.root, silent: on
+		@config.loadRoot = location.protocol + '//' + location.host + @config.root
 		@trigger 'historyStarted', @router
 
 		href = Backbone.history.fragment
 		@pages = new PageCollection @config.pages, 
 			root: @config.root 
+			loadRoot: @config.loadRoot 
 			initialHref: href
 			initialHtml: $('html').html()
 		@requestPage(href, 'called')
@@ -46,11 +49,11 @@ Launcher = exports.Section.extend
 
 		e.stopPropagation()
 		$a = $ e.currentTarget
-		href = prop: ($a.prop 'href'), attr: ($a.attr 'href')
-		root = location.protocol + '//' + location.host + @config.root
-		if href.prop.slice(0, root.length) is root  
+		href = prop: $a.prop('href'), attr: $a.attr('href')
+		{loadRoot} = @config
+		if href.prop.slice(0, loadRoot.length) is loadRoot  
 			if e.preventDefault then e.preventDefault() else e.returnValue = false
-			if @requestPage(href.attr, 'linked', {section}) then Backbone.history.navigate( href.attr, silent: yes)
+			Backbone.history.navigate( href.attr, silent: yes) if @requestPage href.attr, 'linked', {section} 
 
 	getSectionToRefresh: (type, opts)->
 		

@@ -13,9 +13,9 @@ PageCollection = Backbone.Collection.extend
 	byHref: (href, context, next) ->
 
 		href = if href.slice(0,1) is '/' then href.slice(1) else href
-		if page = @findWhere(href:href)
+		if page = @findWhere {href}
 			next.call context, page
 		else
-			@add href: href	
+			@add {href}	
 			.fetch context, next
 				

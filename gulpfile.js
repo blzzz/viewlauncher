@@ -8,6 +8,7 @@ var clone = require('gulp-clone');
 var sourcemaps = require('gulp-sourcemaps');
 var webpackModule = require('webpack')
 var watch = require('gulp-watch');
+var connect = require('gulp-connect');
 
 
 gulp.task('default', function() {
@@ -19,10 +20,11 @@ gulp.task('watch', function () {
     watch(['./src/*.coffee'], function () {
         gulp.start(['build']);
     });
-    watch(['./dist/viewlauncher.js','./demo/**/*.coffee'], function () {
-        gulp.start(['demo']);
+    watch(['./dist/viewlauncher.js','./demo/main.coffee'], function () {
+        gulp.start(['build-demo']);
     });
 });
+
 
 
 gulp.task('build', function() {
@@ -78,11 +80,25 @@ gulp.task('build', function() {
 });
 
 
-gulp.task('demo',function(){
+gulp.task('demo', function() {
+	gulp.start(['build-demo','connect-demo','watch']);	
+});
+
+
+gulp.task('connect-demo', function () {
+  connect.server({
+    root: ['./demo'], //, 'tmp'],
+    port: 8001,
+    // livereload: true
+  });
+});
+
+
+gulp.task('build-demo',function(){
 	gulp.src('./demo/main.coffee')
 		.pipe(webpack({ 
 			plugins: [
-				new webpackModule.optimize.UglifyJsPlugin({minimize: true})
+				// new webpackModule.optimize.UglifyJsPlugin({minimize: true})
 			],
 			module: {
 				loaders: [
