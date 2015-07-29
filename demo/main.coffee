@@ -1,6 +1,4 @@
 
-Launcher = require('../dist/viewlauncher.js')
-
 
 
 # HEADER VIEW
@@ -37,13 +35,14 @@ Header =
 		@$el.css 'background-color', @getRandomColor()
 
 
-# MAIN VIEW
+
+# MAIN SECTION VIEW
 
 MainSection =
 
 	transitionStates:
-		
-		final: position:'static', background:'red'
+
+		final: position:'static' # , background:'red'
 
 	transition: (curr, next, done, duration=900) ->
 
@@ -59,8 +58,12 @@ MainSection =
 			console.log 'Main transition launched'
 
 
+# WIDGET VIEW
+
 Widget = 
+
 	cycle:
+
 		load: (next)-> 
 			console.log("Widget says: LOAD")
 			next()
@@ -70,19 +73,26 @@ Widget =
 			next()
 	
 	events:
+
 		'click *': -> console.log "Widget says: You clicked the Widget!"
 
+
+# REQUIRING OTHER VIEWS...
 
 Gallery = require('./gallery.js')
 
 
+
+# INITIALIZING LAUNCHER
+
+Launcher = require('../dist/viewlauncher.js')
 $(document).ready ->
 
-	new Launcher
+	window.MainLauncher = new Launcher
 		
 		el: 'body'
 
-		root: '/'+location.pathname.split('/').slice(1,3).join('/')+'/'
+		root: '/' #'/' +location.pathname.split('/').slice(1,3).join('/')+'/'
 
 		getSectionByPageRoute: (href) ->
 			
@@ -124,6 +134,7 @@ $(document).ready ->
 		$('html > head > title').text page.get('title')
 		
 	# .bind 'sectionReady', (params)-> @$('.loader').stop().fadeOut 400, -> $(@).remove()
+	
 	.bind 'transitionDone', (params)->
 		@$('.loader').stop().fadeOut 100, -> $(@).remove()
 
